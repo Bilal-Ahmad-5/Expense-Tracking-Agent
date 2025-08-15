@@ -1,23 +1,23 @@
 [
   {
     "date": "2025-08-14",
-    "merchant": "Consecteteur  25",
-    "amount": 127.05,
-    "category": "Shopping",
-    "confidence": 0.5,
-    "description": "Expense at Consecteteur  25",
-    "timestamp": "2025-08-14T15:41:37.696277",
-    "ai_tags": NaN,
-    "is_recurring": NaN
-  },
-  {
-    "date": "2025-08-14",
     "merchant": "Telp  11223344",
     "amount": 14.0,
     "category": "Entertainment & Recreation",
     "confidence": 0.5,
     "description": "Fallback categorization due to processing error",
     "timestamp": "2025-08-14T15:59:42.346246",
+    "ai_tags": [],
+    "is_recurring": false
+  },
+  {
+    "date": "2025-08-16",
+    "merchant": "Consecteteur  25",
+    "amount": 127.05,
+    "category": "Food & Dining",
+    "confidence": 0.6,
+    "description": "Fallback categorization due to processing error",
+    "timestamp": "2025-08-16T04:07:44.796540",
     "ai_tags": [],
     "is_recurring": false
   }

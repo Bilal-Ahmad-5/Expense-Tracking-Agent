@@ -5,8 +5,24 @@ import json
 from datetime import datetime
 import pandas as pd
 from typing import Dict, List, Optional, Any
+from langchain_groq import ChatGroq
+from pydantic import BaseModel , Field
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# Simplified agent system without CrewAI dependency
+api = os.getenv("GROQ_API_KEY")
+
+class RecieptObject(BaseModel):
+    merchant: str = Field(description="Extracted merchant from reciept text")
+    amount: float = Field(description="Extracted amount on reciept")
+    date: str = Field(
+        description="Extracted date of transaction from reciept text")
+    items: str = Field(description="Extracted items from reciept text")
+    categery: str = Field(description="Extracted categery from reciept text")
+
+
+# Simplified agent system 
 class SimpleAgent:
     def __init__(self, role: str, goal: str, backstory: str, llm):
         self.role = role
@@ -37,12 +53,12 @@ class SimpleAgent:
 class AIAgentOrchestrator:
     """Orchestrates multiple AI agents for comprehensive expense management"""
     
-    def __init__(self, groq_api_key: str):
+    def __init__(self):
         from groq import Groq
-        self.groq_client = Groq(api_key=groq_api_key)
-        
-        # Initialize specialized agents
-        self.receipt_agent = self._create_receipt_agent()
+        self.groq_client = Groq(api_key=api)
+
+        # # Initialize specialized agents
+        # self.receipt_agent = self._create_receipt_agent()
         self.categorization_agent = self._create_categorization_agent()  
         self.budget_agent = self._create_budget_agent()
         self.insights_agent = self._create_insights_agent()
@@ -54,17 +70,6 @@ class AIAgentOrchestrator:
             "spending_patterns": {},
             "budget_data": {}
         }
-    
-    def _create_receipt_agent(self) -> SimpleAgent:
-        """Create Receipt Processing Agent"""
-        return SimpleAgent(
-            role="Receipt Processing Specialist",
-            goal="Extract accurate financial data from receipt images using OCR and AI analysis",
-            backstory="""You are an expert in optical character recognition and financial document processing. 
-                        You specialize in extracting structured data from receipts, invoices, and purchase documents 
-                        with high accuracy and attention to detail.""",
-            llm=self.groq_client
-        )
     
     def _create_categorization_agent(self) -> SimpleAgent:
         """Create Expense Categorization Agent"""
@@ -99,73 +104,79 @@ class AIAgentOrchestrator:
             llm=self.groq_client
         )
     
-    def process_receipt_with_ai(self, ocr_text: str, image_context: str = "") -> Dict[str, Any]:
-        """Use AI agent to process receipt data with enhanced extraction"""
+    def ai_enhanced_extraction(self, raw_text):
+
+        """Use AI to enhance and structure the extracted data"""
+
+        prompt = f"""
+            Analyze this OCR text from a receipt and extract structured information:
+            
+            Raw OCR Text:
+            {raw_text}
+            
+            Extract and return a JSON object with these fields:
+            - merchant: Store/business name
+            - amount: Total amount (as float)
+            - date: Date in YYYY-MM-DD format
+            - items: List of purchased items
+            - category_hints: Likely expense category based on merchant/items
+            
+            Focus on accuracy. If information is unclear, mark as null.
+            Return only valid JSON."""
         
-        prompt = f"""Extract financial data from this receipt text. Be very precise and return only valid JSON.
-
-OCR Text:
-{ocr_text}
-
-Instructions:
-1. Find the merchant/store name (usually at the top)
-2. Extract the total amount (look for words like "total", "amount due", "balance")
-3. Find the date (various formats possible)
-4. List items purchased (exclude totals, taxes, etc.)
-5. Suggest appropriate category based on merchant and items
-
-Return ONLY this JSON structure with NO additional text:
-{{
-    "merchant": "exact store name",
-    "amount": 0.00,
-    "date": "YYYY-MM-DD",
-    "items": ["item 1", "item 2"],
-    "category_hint": "Food & Dining",
-    "confidence": 0.90
-}}
-
-Use today's date {datetime.now().strftime('%Y-%m-%d')} if date unclear. Return "Unknown Merchant" if merchant unclear."""
+        model = ChatGroq(
+            temperature=0.1,
+            groq_api_key=api,
+            model_name="llama-3.1-8b-instant").bind_tools([RecieptObject])
         
+
         try:
-            response = self.groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {"role": "system", "content": "You are a receipt data extraction expert. Return only valid JSON."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.1,
-                max_tokens=500
-            )
-            
-            result = response.choices[0].message.content.strip()
-            
-            # Clean up response
-            if result.startswith('```json'):
-                result = result.replace('```json', '').replace('```', '').strip()
-            elif result.startswith('```'):
-                result = result.replace('```', '').strip()
-            
-            # Find JSON in response
-            start_idx = result.find('{')
-            end_idx = result.rfind('}') + 1
-            if start_idx != -1 and end_idx > start_idx:
-                result = result[start_idx:end_idx]
-            
-            parsed_data = json.loads(result)
-            
-            # Validate and clean data
-            if not isinstance(parsed_data.get('amount'), (int, float)):
-                parsed_data['amount'] = 0.0
-            if not isinstance(parsed_data.get('items'), list):
-                parsed_data['items'] = []
-            if not parsed_data.get('merchant'):
-                parsed_data['merchant'] = "Unknown Merchant"
-                
-            return parsed_data
+            result = model.invoke(prompt)
+            return {
+                "merchant":
+                result["merchant"],
+                "amount":
+                result["amount"],
+                "date":
+                result["date"],
+                "items":
+                result["items"],
+                "category_hints":
+                self._guess_category(result["merchant"], result["items"])
+            }
             
         except Exception as e:
             print(f"Receipt AI processing error: {e}")
-            return self._fallback_receipt_processing(ocr_text)
+            return self._fallback_receipt_processing(raw_text)
+
+    def _guess_category(self, merchant, items):
+        """Provide category hints based on merchant and items"""
+        merchant_lower = merchant.lower()
+        items_text = " ".join(items).lower()
+
+        category_keywords = {
+            "Food & Dining": [
+                "restaurant", "cafe", "starbucks", "mcdonalds", "pizza",
+                "food", "grocery"
+            ],
+            "Shopping":
+            ["walmart", "target", "amazon", "clothing", "mall", "store"],
+            "Transportation":
+            ["gas", "fuel", "shell", "exxon", "bp", "chevron", "uber", "taxi"],
+            "Entertainment":
+            ["movie", "theater", "game", "concert", "entertainment"],
+            "Healthcare":
+            ["pharmacy", "cvs", "walgreens", "hospital", "medical", "health"],
+            "Utilities":
+            ["electric", "water", "internet", "phone", "cable", "utility"]
+        }
+
+        for category, keywords in category_keywords.items():
+            if any(keyword in merchant_lower or keyword in items_text
+                   for keyword in keywords):
+                return category
+
+        return "Other"
     
     def categorize_expense_with_ai(self, merchant: str, amount: float, items: List[str] = None, 
                                   context: Dict = None) -> Dict[str, Any]:
