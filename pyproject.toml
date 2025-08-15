@@ -1,0 +1,17 @@
+[project]
+name = "ETA"
+version = "0.1.0"
+description = "AI-Powered Expense Tracker"
+requires-python = ">=3.11"
+dependencies = [
+    "groq>=0.31.0",
+    "langchain-groq>=0.3.7",
+    "notion-client>=2.4.0",
+    "numpy>=2.3.2",
+    "openai>=1.99.9",
+    "pandas>=2.3.1",
+    "pillow>=11.3.0",
+    "plotly>=6.3.0",
+    "pytesseract>=0.3.13",
+    "streamlit>=1.48.1",
+]
