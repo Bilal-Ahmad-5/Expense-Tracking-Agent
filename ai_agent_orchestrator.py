@@ -8,10 +8,12 @@ from typing import Dict, List, Optional, Any
 from langchain_groq import ChatGroq
 from pydantic import BaseModel , Field
 import os
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
-api = os.getenv("GROQ_API_KEY")
+api = "***REMOVED***"
+
+# os.getenv("GROQ_API_KEY")
 
 class RecieptObject(BaseModel):
     merchant: str = Field(description="Extracted merchant from reciept text")
