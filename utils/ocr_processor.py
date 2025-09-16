@@ -3,8 +3,7 @@ from PIL import Image, ImageEnhance, ImageFilter
 import re
 from datetime import datetime
 
-
-pytesseract.pytesseract.tesseract_cmd = r"C:\codehub\Gen AI Projects\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\codehub\Gen AI Projects\ETA\tesseact\tesseract.exe"
 print(pytesseract.get_tesseract_version())
 
 class OCRProcessor:    
@@ -37,26 +36,10 @@ class OCRProcessor:
         try:
             processed_image = self.preprocess_image(image)
 
-            # Multiple OCR passes with different configurations
-            configs = [
-                r'--oem 3 --psm 6',  # Uniform text block
-                r'--oem 3 --psm 4',  # Single column text
-                r'--oem 3 --psm 3',  # Fully automatic
-            ]
 
-            texts = []
-            for config in configs:
-                try:
-                    text = pytesseract.image_to_string(processed_image,
-                                                       config=config)
-                    if text.strip():
-                        texts.append(text.strip())
-                except:
-                    continue
-
-            # Combine and deduplicate text
-            combined_text = "\n".join(texts)
-            return combined_text
+            text = pytesseract.image_to_string(processed_image)
+            
+            return text.strip()
 
         except Exception as e:
             print(f"OCR extraction error: {e}")

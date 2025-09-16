@@ -8,11 +8,11 @@ import base64
 from PIL import Image
 import io
 
-from ocr_processor import OCRProcessor
-from ai_agent_orchestrator import AIAgentOrchestrator
-from data_manager import DataManager
-from visualizations import create_spending_chart, create_category_pie_chart, create_budget_gauge
-from styles import apply_custom_styles
+from utils.ocr_processor import OCRProcessor
+from agent_orchestrator import AIAgentOrchestrator
+from utils.data_manager import DataManager
+from utils.visualizations import create_spending_chart, create_category_pie_chart, create_budget_gauge
+from utils.styles import apply_custom_styles
 
 # Initialize AI Agent System
 @st.cache_resource
@@ -134,52 +134,17 @@ def main():
                             
                             # Show extracted items if available
                             extracted_items = ai_extracted_data["items"]
-                            if extracted_items:
-                                st.markdown("**Items Found:**")
-                                st.write(", ".join(extracted_items[:5]))
+                            st.markdown("**Items Found:**")
+                            st.write(", ".join(extracted_items[:5]))
                             
-                            # AI Agent-powered categorization
-                            with st.spinner("🤖 AI Agent categorizing expense..."):
-                                category_data = ai_orchestrator.categorize_expense_with_ai(
-                                    merchant, amount, extracted_items
-                                )
+                            _category = ai_extracted_data["category"]
+                            category = st.text_input("category", value=_category)
                             
-                            # Enhanced category options
-                            category_options = [
-                                'Food & Dining', 'Groceries', 'Shopping & Retail', 'Transportation & Gas',
-                                'Entertainment & Recreation', 'Healthcare & Medical', 'Utilities & Bills',
-                                'Home & Garden', 'Education & Learning', 'Travel & Vacation', 
-                                'Professional Services', 'Subscriptions & Memberships', 'Other'
-                            ]
-                            
-                            selected_category = category_data.get('category', 'Other')
-                            if selected_category not in category_options:
-                                selected_category = 'Other'
-                                
-                            category = st.selectbox(
-                                "Category", 
-                                options=category_options,
-                                index=category_options.index(selected_category)
-                            )
-                            
-                            # Show AI confidence and reasoning
-                            if category_data.get('confidence', 0) > 0.7:
-                                st.success(f"🎯 AI Confidence: {category_data.get('confidence', 0):.0%}")
-                            
-                            if category_data.get('reasoning'):
-                                st.info(f"💡 AI Reasoning: {category_data.get('reasoning')}")
+                            _description = ai_extracted_data["description"]
+                            description = st.text_input("Description", value=_description)
                             
                             if st.button("💾 Save Expense", type="primary"):
-                                expense_data = {
-                                    'date': date.strftime('%Y-%m-%d'),
-                                    'merchant': merchant,
-                                    'amount': amount,
-                                    'category': category,
-                                    'confidence': category_data.get('confidence', 0.8),
-                                    'description': category_data.get('reasoning', f'Expense at {merchant}'),
-                                    'ai_tags': category_data.get('tags', []),
-                                    'is_recurring': category_data.get('is_recurring', False)
-                                }
+                                expense_data = ai_extracted_data
                                 
                                 # Update AI agent memory
                                 ai_orchestrator.update_agent_memory(expense_data)
@@ -191,6 +156,7 @@ def main():
                             st.error("❌ Could not extract data from receipt. Please try again with a clearer image.")
                     except Exception as e:
                         st.error(f"❌ Error processing receipt: {str(e)}")
+            st.markdown(ocr_result)
     
     with tab2:
         st.markdown("### 📊 Expense Dashboard")
@@ -376,8 +342,6 @@ def main():
                             st.success(f"+${variance:.0f}")
                         elif variance < 0:
                             st.error(f"${variance:.0f}")
-                        else:
-                            st.write("On track")
                 
                 # AI Recommendations
                 if budget.get('recommendations'):

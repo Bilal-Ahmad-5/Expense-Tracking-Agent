@@ -1,41 +1,38 @@
 [
   {
+    "date": "2025-08-17",
+    "merchant": "Consecteteur  25",
+    "amount": 127.05,
+    "category": "Shopping & Retail",
+    "description": "Unknown merchant with no items listed",
+    "timestamp": "2025-09-12T01:16:57.261598",
+    "items": "Unknown"
+  },
+  {
     "date": "2025-08-15",
     "merchant": "Ali Store",
-    "amount": 127.05,
+    "amount": 27.05,
     "category": "Groceries",
-    "confidence": 0.6,
-    "description": "groceries from Ali store",
-    "timestamp": "2025-08-17T17:11:20.271555",
-    "ai_tags": [
-      "Alu Store",
-      "Groceries"
-    ],
-    "is_recurring": false
+    "description": "Fallback categorization",
+    "timestamp": "2025-09-13T01:16:57.261598",
+    "items": "Shampoo"
   },
   {
     "date": "2025-08-14",
     "merchant": "Telp  11223344",
     "amount": 14.0,
     "category": "Entertainment & Recreation",
-    "confidence": 0.5,
-    "description": "Fallback categorization due to processing error",
-    "timestamp": "2025-08-14T15:59:42.346246",
-    "ai_tags": [],
-    "is_recurring": false
+    "description": "Fallback categorization",
+    "timestamp": "2025-09-14T01:16:57.261598",
+    "items": "Ice Water"
   },
   {
-    "date": "2025-08-17",
-    "merchant": "Consecteteur  25",
-    "amount": 127.05,
-    "category": "Shopping & Retail",
-    "confidence": 0.6,
-    "description": "Unknown merchant with no items listed",
-    "timestamp": "2025-08-17T18:08:26.064633",
-    "ai_tags": [
-      "unknown merchant",
-      "no items"
-    ],
-    "is_recurring": false
+    "date": "2016-08-08",
+    "merchant": "Pan Dorothy",
+    "amount": 4500.0,
+    "category": "Cafe",
+    "description": "Receipt for coffee items from Pan Dorothy.",
+    "timestamp": "2025-09-17T01:44:22.082474",
+    "items": "Ice Americano, Ice Cappuccino"
   }
 ]

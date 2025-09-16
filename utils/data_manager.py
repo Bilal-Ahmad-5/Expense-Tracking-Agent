@@ -22,18 +22,13 @@ class DataManager:
             
             if not data:
                 return pd.DataFrame(columns=[
-                    'date', 'merchant', 'amount', 'category', 'confidence', 'description',
-                    'ai_tags', 'is_recurring', 'timestamp'
+                    'merchant', 'amount', 'date', 'items', 'category', 'description', 'timestamp'
                 ])
             
             df = pd.DataFrame(data)
             df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
             
             # Handle missing columns for backward compatibility
-            if 'ai_tags' not in df.columns:
-                df['ai_tags'] = df.apply(lambda x: [], axis=1)
-            if 'is_recurring' not in df.columns:
-                df['is_recurring'] = False
             if 'timestamp' not in df.columns:
                 df['timestamp'] = datetime.now().isoformat()
             
@@ -42,8 +37,7 @@ class DataManager:
         except Exception as e:
             print(f"Error loading expenses: {e}")
             return pd.DataFrame(columns=[
-                'date', 'merchant', 'amount', 'category', 'confidence', 'description',
-                'ai_tags', 'is_recurring', 'timestamp'
+                'merchant', 'amount', 'date', 'items', 'category',  'description','timestamp'
             ])
     
     def save_expenses(self, expenses_df):
