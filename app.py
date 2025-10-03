@@ -110,16 +110,14 @@ def main():
                         ocr_result = ocr.extract_text_with_ocr(image)
                         
                         if ocr_result:
-                            # Use AI agent to enhance data extraction
-                            with st.spinner("🤖 AI analyzing receipt data..."):
-                                ai_extracted_data = ai_orchestrator.ai_enhanced_extraction(ocr_result)
+                            ai_extracted_data = ai_orchestrator.ai_extraction_and_categorization(ocr_result)
                             
                             st.success("✅ Receipt processed with AI enhancement!")
                             
-                            # Display extracted data with edit options
+                            # Display extracted data
                             st.markdown("#### AI-Enhanced Extraction")
                             
-                            # Use AI-extracted data as primary source with OCR as fallback
+                            # AI-extracted data as primary source with OCR 
                             extracted_amount = ai_extracted_data["amount"]
                             amount = st.number_input("Amount ($)", value=float(extracted_amount), min_value=0.0)
                             
@@ -132,7 +130,7 @@ def main():
                             extracted_merchant = ai_extracted_data["merchant"]
                             merchant = st.text_input("Merchant", value=extracted_merchant)
                             
-                            # Show extracted items if available
+                            # Show extracted items
                             extracted_items = ai_extracted_data["items"]
                             st.markdown("**Items Found:**")
                             st.write(", ".join(extracted_items[:5]))
@@ -143,12 +141,7 @@ def main():
                             _description = ai_extracted_data["description"]
                             description = st.text_input("Description", value=_description)
                             
-
-                        else:
-                            st.error("❌ Could not extract data from receipt. Please try again with a clearer image.")
-                    except Exception as e:
-                        st.error(f"❌ Error processing receipt: {str(e)}")
-                if st.button("💾 Save Expense", type="primary"):
+                            if st.button("💾 Save Expense", type="primary"):
                                 expense_data = ai_extracted_data
                                 
                                 # Update AI agent memory
@@ -157,6 +150,11 @@ def main():
                                 data_manager.add_expense(expense_data)
                                 st.success("💰 Expense saved and learned by AI!")
                                 st.rerun()
+                        else:
+                            st.error("❌ Could not extract data from receipt. Please try again with a clearer image.")
+                    except Exception as e:
+                        st.error(f"❌ Error processing receipt: {str(e)}")
+                
     
     with tab2:
         st.markdown("### 📊 Expense Dashboard")

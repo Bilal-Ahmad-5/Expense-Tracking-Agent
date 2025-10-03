@@ -40,7 +40,7 @@ class AIAgentOrchestrator:
             "budget_data": {}
         }
     
-    def ai_enhanced_extraction(self, raw_text):
+    def ai_extraction_and_categorization(self, raw_text):
 
         """Use AI to enhance and structure the extracted data"""
 
