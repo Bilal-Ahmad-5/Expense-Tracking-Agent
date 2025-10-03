@@ -47,13 +47,13 @@ Key agents:
 
 - **Multi-Agent Orchestrator**: Routes tasks and composes agent outputs into unified results
 - **Agent Memory**: Contextual memory to improve personalization and categorization over time
-- **LLM Integration**: Groq models (e.g., `llama-3.3-70b-versatile`) via `langchain-groq` for reasoning, extraction, and recommendations
+- **LLM Integration**: Groq models (e.g., `gemini-flash-2.5`) via `langchain-google-genai` for reasoning, extraction, and recommendations
 
 ---
 
 ## 🔐 Authentication & Security
 
-- **API keys** are managed via environment variables (e.g., `GROQ_API_KEY`, `OPENAI_API_KEY`)
+- **API keys** are managed via environment variables (e.g., `GOOGLE_API_KEY`)
 - This repository currently targets a single-user setup (no user accounts or login). Consider adding authentication for multi-user deployments.
 
 ---
@@ -166,7 +166,7 @@ This project is released under the **MIT License**. See the `LICENSE` file for d
 
 ## 🙋‍♀️ Contact
 
-For support or questions, open an issue on the repository or contact the maintainer at `your.email@example.com`.
+For support or questions, open an issue on the repository or contact the maintainer at `hey.bilalahmad@gmail.com`.
 
 ---
 
