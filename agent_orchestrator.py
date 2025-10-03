@@ -66,7 +66,7 @@ class AIAgentOrchestrator:
         response = model.invoke(prompt)
         result = response.additional_kwargs["function_call"]["arguments"]
         result = json.loads(result)
-        print(result["merchant"], result["amount"], result["category"], result["date"], result["description"])
+        print(result)
         return {
             "merchant": result["merchant"],
             "amount": result["amount"],
@@ -117,7 +117,8 @@ Monthly Spending History:
 
 Create realistic budget using 50/30/20 principles but adjusted for actual spending patterns.
 
-Return ONLY this JSON:
+Return ONLY JSON, For example (note: Remember that it is just an example, you can change the values based on
+the actual spending patterns):
 {{
     "monthly_budget": {{
         "Food & Dining": {{"recommended": 300.00, "current": 350.00, "percentage": 0.15}},
@@ -152,6 +153,7 @@ Use actual spending data to make realistic recommendations."""
         try:
             response = llm.invoke(prompt)
             result = response.content
+            print(result)
             
             # Clean up response
             if result.startswith('```json'):
@@ -176,7 +178,7 @@ Use actual spending data to make realistic recommendations."""
             
         except Exception as e:
             print(f"Budget AI generation error: {e}")
-            return self._fallback_budget_creation(income, categories)
+            
     
     def generate_insights_with_ai(self, expense_data: List[Dict]) -> Dict[str, Any]:
         """Generate financial insights using AI agent"""
@@ -317,65 +319,3 @@ Focus on practical, actionable advice."""
         # Keep only last 50 expenses in memory
         if len(self.agent_memory["recent_expenses"]) > 50:
             self.agent_memory["recent_expenses"] = self.agent_memory["recent_expenses"][-50:]
-    
-    def _fallback_receipt_processing(self, ocr_text: str) -> Dict[str, Any]:
-        """Fallback receipt processing without AI"""
-        import re
-        
-        # Extract amount
-        amount_matches = re.findall(r'\$\s*(\d+\.\d{2})', ocr_text)
-        amount = max([float(m) for m in amount_matches]) if amount_matches else 0.0
-        
-        # Extract merchant (first reasonable line)
-        lines = ocr_text.split('\n')
-        merchant = "Unknown Merchant"
-        for line in lines[:5]:
-            line = line.strip()
-            if len(line) > 3 and not re.match(r'^\d+$', line):
-                merchant = re.sub(r'[^a-zA-Z0-9\s]', ' ', line).strip().title()
-                if len(merchant) <= 30:
-                    break
-        
-        return {
-            "merchant": merchant,
-            "amount": amount,
-            "date": datetime.now().strftime('%Y-%m-%d'),
-            "items": [],
-            "category_hint": "Other"
-        }
-    
-    def _fallback_budget_creation(self, income: float, current_spending: Dict) -> Dict[str, Any]:
-        """Fallback budget creation without AI"""
-        
-        # Basic 50/30/20 allocation
-        needs_budget = income * 0.5
-        wants_budget = income * 0.3
-        savings_budget = income * 0.2
-        
-        budget = {
-            "Food & Dining": {"recommended": income * 0.15, "current": current_spending.get("Food & Dining", 0), "percentage": 0.15},
-            "Groceries": {"recommended": income * 0.12, "current": current_spending.get("Groceries", 0), "percentage": 0.12},
-            "Transportation & Gas": {"recommended": income * 0.15, "current": current_spending.get("Transportation & Gas", 0), "percentage": 0.15},
-            "Utilities & Bills": {"recommended": income * 0.08, "current": current_spending.get("Utilities & Bills", 0), "percentage": 0.08},
-            "Shopping & Retail": {"recommended": income * 0.10, "current": current_spending.get("Shopping & Retail", 0), "percentage": 0.10},
-            "Entertainment & Recreation": {"recommended": income * 0.08, "current": current_spending.get("Entertainment & Recreation", 0), "percentage": 0.08},
-            "Other": {"recommended": income * 0.12, "current": current_spending.get("Other", 0), "percentage": 0.12}
-        }
-        
-        return {
-            "monthly_budget": budget,
-            "budget_summary": {
-                "total_income": income,
-                "total_allocated": income * 0.8,
-                "savings_target": savings_budget,
-                "emergency_fund_target": income * 6
-            },
-            "recommendations": [
-                "Track all expenses to stay within budget limits",
-                "Build an emergency fund with 6 months of expenses",
-                "Review and adjust your budget monthly based on actual spending"
-            ],
-            "budget_health_score": 75,
-            "created_date": datetime.now().strftime("%Y-%m-%d")
-        }
-        

@@ -143,7 +143,12 @@ def main():
                             _description = ai_extracted_data["description"]
                             description = st.text_input("Description", value=_description)
                             
-                            if st.button("💾 Save Expense", type="primary"):
+
+                        else:
+                            st.error("❌ Could not extract data from receipt. Please try again with a clearer image.")
+                    except Exception as e:
+                        st.error(f"❌ Error processing receipt: {str(e)}")
+                if st.button("💾 Save Expense", type="primary"):
                                 expense_data = ai_extracted_data
                                 
                                 # Update AI agent memory
@@ -152,11 +157,6 @@ def main():
                                 data_manager.add_expense(expense_data)
                                 st.success("💰 Expense saved and learned by AI!")
                                 st.rerun()
-                        else:
-                            st.error("❌ Could not extract data from receipt. Please try again with a clearer image.")
-                    except Exception as e:
-                        st.error(f"❌ Error processing receipt: {str(e)}")
-            st.markdown(ocr_result)
     
     with tab2:
         st.markdown("### 📊 Expense Dashboard")

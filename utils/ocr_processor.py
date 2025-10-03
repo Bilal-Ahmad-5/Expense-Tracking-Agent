@@ -3,7 +3,7 @@ from PIL import Image, ImageEnhance, ImageFilter
 import re
 from datetime import datetime
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\codehub\Gen AI Projects\ETA\tesseact\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"D:\codehub\Gen AI Projects\ETA\tesseact\tesseract.exe"
 print(pytesseract.get_tesseract_version())
 
 class OCRProcessor:    

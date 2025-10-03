@@ -1,5 +1,23 @@
 [
   {
+    "date": "2025-08-28",
+    "merchant": "Pan Dorothy",
+    "amount": 45.0,
+    "category": "Cafe",
+    "description": "Receipt for coffee items from Pan Dorothy.",
+    "timestamp": "2025-09-17T01:44:22.082474",
+    "items": "Ice Americano, Ice Cappuccino"
+  },
+  {
+    "date": "2025-08-18",
+    "merchant": "Pan Dorothy",
+    "amount": 45.0,
+    "category": "Food & Drink",
+    "description": "Receipt from Pan Dorothy on 2016-08-08 for a total of 4500, including Ice Americano and Ice Cappuccino.",
+    "timestamp": "2025-10-03T18:22:56.595885",
+    "items": "Ice Americano, Ice Cappuccino"
+  },
+  {
     "date": "2025-08-17",
     "merchant": "Consecteteur  25",
     "amount": 127.05,
@@ -25,14 +43,5 @@
     "description": "Fallback categorization",
     "timestamp": "2025-09-14T01:16:57.261598",
     "items": "Ice Water"
-  },
-  {
-    "date": "2016-08-08",
-    "merchant": "Pan Dorothy",
-    "amount": 4500.0,
-    "category": "Cafe",
-    "description": "Receipt for coffee items from Pan Dorothy.",
-    "timestamp": "2025-09-17T01:44:22.082474",
-    "items": "Ice Americano, Ice Cappuccino"
   }
 ]
