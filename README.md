@@ -102,7 +102,7 @@ Expense-Tracking-Agent/
 1. **Clone the repo**
 
 ```bash
-git clone https://github.com/Bilal-Ahmad-5/Expense-Tracking-Agent.git
+git clone https://github.com/Bilal-Ahmad-5/Expense-Tracking-System.git
 cd Expense-Tracking-Agent
 ```
 
